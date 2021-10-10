@@ -2,7 +2,6 @@ import { Components } from "../components/components";
 import { System } from "../ecs";
 import { Vec2 } from "../vec2";
 import { TARGET_RADIUS } from './draw';
-import { BALL_RADIUS } from "./startup";
 
 const gravityForce = (
   planetPos: Vec2,
