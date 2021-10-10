@@ -1,9 +1,9 @@
 {
   "name": "space-golf",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build --base=/space-golf/",
     "serve": "vite preview"
   },
   "devDependencies": {
