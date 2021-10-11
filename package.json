@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build --base=/space-golf/",
+    "build": "tsc && vite build",
+    "build-gh": "tsc && vite build --base=/space-golf/",
     "serve": "vite preview"
   },
   "devDependencies": {

@@ -8,36 +8,40 @@ export class Vec2 {
     this.y = y;
   }
 
-  public addMut({ x, y }: Vec2): void {
+  public addMut({ x, y }: Vec2): Vec2 {
     this.x += x;
     this.y += y;
+    return this;
   }
 
   public add({ x, y }: Vec2): Vec2 {
     return vec2(this.x + x, this.y + y);
   }
 
-  public subMut({ x, y }: Vec2): void {
+  public subMut({ x, y }: Vec2): Vec2 {
     this.x -= x;
     this.y -= y;
+    return this;
   }
 
   public sub({ x, y }: Vec2): Vec2 {
     return vec2(this.x - x, this.y - y);
   }
 
-  public timesMut(k: number): void {
+  public timesMut(k: number): Vec2 {
     this.x *= k;
     this.y *= k;
+    return this;
   }
 
   public times(k: number): Vec2 {
     return vec2(this.x * k, this.y * k);
   }
 
-  public divMut(k: number): void {
+  public divMut(k: number): Vec2 {
     this.x /= k;
     this.y /= k;
+    return this;
   }
 
   public div(k: number): Vec2 {
@@ -64,18 +68,21 @@ export class Vec2 {
     return this.div(this.length());
   }
 
-  public normalizeMut(): void {
+  public normalizeMut(): Vec2 {
     this.divMut(this.length());
+    return this;
   }
 
-  public copy({ x, y }: Vec2): void {
+  public copy({ x, y }: Vec2): Vec2 {
     this.x = x;
     this.y = y;
+    return this;
   }
 
-  public set(x: number, y: number): void {
+  public set(x: number, y: number): Vec2 {
     this.x = x;
     this.y = y;
+    return this;
   }
 
   public clone(): Vec2 {
@@ -86,8 +93,20 @@ export class Vec2 {
     return this.x * x + this.y * y;
   }
 
+  public reflectMut(normal: Vec2): Vec2 {
+    return this.subMut(normal.times(2 * this.dot(normal)));
+  }
+
   public reflect(normal: Vec2): Vec2 {
     return this.sub(normal.times(2 * this.dot(normal)));
+  }
+
+  public limitMut(maxLength: number): Vec2 {
+    if (this.lengthSq() > maxLength * maxLength) {
+      return this.normalizeMut().timesMut(maxLength);
+    }
+
+    return this;
   }
 
   public limit(maxLength: number): Vec2 {

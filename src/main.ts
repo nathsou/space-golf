@@ -2,8 +2,8 @@ import { Components } from './components/components';
 import { createApp } from './ecs';
 import { Resources } from './resources';
 import { drawSystem } from './systems/draw';
-import { collisionSystem, gravitySystem } from './systems/physics';
-import { addBalls, addPlanets, addUserActions } from './systems/startup';
+import { physicsSystem } from './systems/physics';
+import { addBalls, addPlanets, addInputs } from './systems/startup';
 import { vec2 } from './vec2';
 
 const canvas = document.createElement('canvas');
@@ -26,12 +26,11 @@ const resources: Resources = {
 };
 
 createApp<Components, Resources>(resources)
-  .addStartupSystem(addPlanets(5))
+  .addStartupSystem(addPlanets(10))
   .addStartupSystem(addBalls(1))
-  .addStartupSystem(addUserActions)
+  .addStartupSystem(addInputs)
+  .addSystem(physicsSystem)
   .addSystem(drawSystem)
-  .addSystem(gravitySystem)
-  .addSystem(collisionSystem)
   .run();
 
 document.body.appendChild(canvas);

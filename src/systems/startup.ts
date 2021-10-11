@@ -61,7 +61,7 @@ export const addBalls = (count = 1): System<Components> => app => {
   }
 };
 
-export const addUserActions: System<Components, Resources> = app => {
+export const addInputs: System<Components, Resources> = app => {
   const { canvas, action } = app.resources;
   canvas.addEventListener('pointerdown', ev => {
     action.start.set(ev.clientX, ev.clientY);

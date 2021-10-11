@@ -1,5 +1,5 @@
 import { Components } from "../components/components";
-import { System } from "../ecs";
+import { combineSystems, System } from "../ecs";
 import { Vec2 } from "../vec2";
 import { TARGET_RADIUS } from './draw';
 
@@ -11,7 +11,7 @@ const gravityForce = (
 ): Vec2 => {
   const dir = planetPos.sub(ballPos);
   const len = 0.00001 * ((ballMass * planetMass) / dir.lengthSq());
-  return dir.normalize().times(len);
+  return dir.normalizeMut().timesMut(len);
 };
 
 const deltaT = 1 / 60;
@@ -43,7 +43,7 @@ export const collisionSystem: System<Components> = app => {
       if (ballPos.distSq(planetPos) <= radiusSum ** 2) {
         const normal = ballPos.sub(planetPos).normalize();
         const contactPoint = planetPos.add(normal.times(radiusSum));
-        velocity.copy(velocity.reflect(normal).times(0.8));
+        velocity.reflectMut(normal).timesMut(0.8);
 
         const target = app.getComponent(planetEntity, 'target');
         const isNearTarget = target && target.target.distSq(ballPos) <= TARGET_RADIUS ** 2;
@@ -62,3 +62,5 @@ export const collisionSystem: System<Components> = app => {
     }
   }
 };
+
+export const physicsSystem = combineSystems(gravitySystem, collisionSystem);

@@ -1,5 +1,5 @@
 import { Components } from "../components/components";
-import { App, System } from "../ecs";
+import { App, combineSystems, System } from "../ecs";
 import { Resources } from "../resources";
 import { Vec2 } from "../vec2";
 import { BALL_RADIUS } from "./startup";
@@ -13,14 +13,6 @@ export const randomColor = () => rgb(Math.floor(Math.random() * 256), Math.floor
 const formatColor = ({ r, g, b }: Color) => `rgb(${r}, ${g}, ${b})`;
 
 const BACKGROUND_COLOR = 'rgb(0, 13, 36)';
-
-export const drawSystem: System<Components, Resources> = (app: App<Components, Resources>) => {
-  clearCanvasSystem(app);
-  drawPlanetsSystem(app);
-  drawTargetsSystem(app);
-  drawBallsSystem(app);
-  drawArrowsSystem(app);
-};
 
 export const clearCanvasSystem: System<Components, Resources> = (app: App<Components, Resources>) => {
   const { canvas, context: ctx } = app.resources;
@@ -84,3 +76,11 @@ const drawTargetsSystem: System<Components, Resources> = (app: App<Components, R
     ctx.fill();
   }
 };
+
+export const drawSystem = combineSystems(
+  clearCanvasSystem,
+  drawPlanetsSystem,
+  drawTargetsSystem,
+  drawBallsSystem,
+  drawArrowsSystem,
+);

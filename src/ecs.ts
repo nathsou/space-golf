@@ -13,6 +13,17 @@ export const createComponent = <
 
 export type System<C extends Component<string>, R extends object = {}> = (app: App<C, R>) => void;
 
+export const combineSystems = <
+  C extends Component<string>,
+  R extends object = {}
+>(...systems: System<C, R>[]): System<C, R> => {
+  return app => {
+    systems.forEach(system => {
+      system(app);
+    });
+  };
+};
+
 type MapComponentTypes<U, C> =
   U extends [infer H, ...infer TL] ?
   [C & { __type: H }, ...MapComponentTypes<TL, C>] :
@@ -94,12 +105,27 @@ export class App<C extends Component<string>, R extends object = {}> {
     return this;
   }
 
-  public *query<T extends C['__type'][]>(...types: T): IterableIterator<MapComponentTypes<T, C>> {
-    for (const entity of this.entities) {
-      if (types.every(type => this.components.get(type)?.has(entity))) {
-        const tuple = types.map(type => this.components.get(type)?.get(entity)) as MapComponentTypes<T, C>;
-        tuple.push(entity);
-        yield tuple;
+  public getEntities = () => this.entities[Symbol.iterator];
+
+  public *query<
+    H extends C['__type'],
+    T extends C['__type'][]
+  >(head: H, ...tail: T): IterableIterator<MapComponentTypes<[H, ...T], C>> {
+    for (const entity of this.components.get(head)?.keys() ?? []) {
+      if (tail.every(type => this.hasComponent(entity, type))) {
+        const tuple = new Array(tail.length + 2);
+        tuple[0] = this.getComponent(entity, head);
+
+        tail.forEach((type, index) => {
+          tuple[index + 1] = this.getComponent(entity, type);
+        });
+
+        tail.forEach(type => {
+          tuple.push(this.getComponent(entity, type));
+        });
+
+        tuple[tail.length + 1] = entity;
+        yield tuple as MapComponentTypes<[H, ...T], C>;
       }
     }
   }
