@@ -17,8 +17,8 @@ const gravityForce = (
 const deltaT = 1 / 60;
 
 export const gravitySystem: System<Components> = app => {
-  const balls = app.query('active', 'gravity', 'position', 'mass');
-  const planets = [...app.query('attractor', 'position', 'mass')];
+  const balls = app.queryIter('active', 'gravity', 'position', 'mass');
+  const planets = app.query('attractor', 'position', 'mass');
 
   for (const [_, { velocity, acceleration }, { position: ballPos }, { mass: ballMass }] of balls) {
     for (const [_, { position: planetPos }, { mass: planetMass }] of planets) {
@@ -33,8 +33,8 @@ export const gravitySystem: System<Components> = app => {
 };
 
 export const collisionSystem: System<Components> = app => {
-  const balls = app.query('active', 'gravity', 'position', 'shape');
-  const planets = [...app.query('attractor', 'position', 'shape')];
+  const balls = app.queryIter('active', 'gravity', 'position', 'shape');
+  const planets = app.query('attractor', 'position', 'shape');
 
   for (const [_, { velocity, prevPosition: prevBallPos }, { position: ballPos }, ballShape, ballEntity] of balls) {
     for (const [_, { position: planetPos }, planetShape, planetEntity] of planets) {

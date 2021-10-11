@@ -107,33 +107,53 @@ export class App<C extends Component<string>, R extends object = {}> {
 
   public getEntities = () => this.entities[Symbol.iterator];
 
-  public *query<
+  private storeQueryTuple<
     H extends C['__type'],
     T extends C['__type'][]
-  >(head: H, ...tail: T): IterableIterator<MapComponentTypes<[H, ...T], C>> {
+  >(head: H, tail: T, entity: Entity, tuple: any[]): void {
+    tuple[0] = this.getComponent(entity, head);
+
+    for (let i = 0; i < tail.length; i++) {
+      const type = tail[i];
+      tuple[i + 1] = this.getComponent(entity, type);
+    }
+
+    tuple[tail.length + 1] = entity;
+  }
+
+  public query<
+    H extends C['__type'],
+    T extends C['__type'][]
+  >(head: H, ...tail: T): MapComponentTypes<[H, ...T], C>[] {
+    const tuples: any[] = [];
     for (const entity of this.components.get(head)?.keys() ?? []) {
       if (tail.every(type => this.hasComponent(entity, type))) {
         const tuple = new Array(tail.length + 2);
-        tuple[0] = this.getComponent(entity, head);
+        this.storeQueryTuple(head, tail, entity, tuple);
+        tuples.push(tuple);
+      }
+    }
 
-        tail.forEach((type, index) => {
-          tuple[index + 1] = this.getComponent(entity, type);
-        });
+    return tuples;
+  }
 
-        tail.forEach(type => {
-          tuple.push(this.getComponent(entity, type));
-        });
-
-        tuple[tail.length + 1] = entity;
+  public * queryIter<
+    H extends C['__type'],
+    T extends C['__type'][]
+  >(head: H, ...tail: T): IterableIterator<MapComponentTypes<[H, ...T], C>> {
+    const tuple = new Array(tail.length + 2);
+    for (const entity of this.components.get(head)?.keys() ?? []) {
+      if (tail.every(type => this.hasComponent(entity, type))) {
+        this.storeQueryTuple(head, tail, entity, tuple);
         yield tuple as MapComponentTypes<[H, ...T], C>;
       }
     }
   }
 
   private step = () => {
-    this.systems.forEach(system => {
-      system(this);
-    });
+    for (let i = 0; i < this.systems.length; i++) {
+      this.systems[i](this);
+    }
 
     requestAnimationFrame(this.step);
   };

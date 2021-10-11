@@ -43,7 +43,7 @@ export const addPlanets = (count = 10): System<Components> => app => {
 };
 
 export const addBalls = (count = 1): System<Components> => app => {
-  const planets = [...app.query('position', 'shape', 'attractor')];
+  const planets = app.query('position', 'shape', 'attractor');
 
   for (let i = 0; i < count; i++) {
     const [{ position: planetPos }, { radius: planetRadius }] = randomElement(planets);
@@ -75,12 +75,15 @@ export const addInputs: System<Components, Resources> = app => {
 
   canvas.addEventListener('pointerup', () => {
     const v = action.start.sub(action.end).times(500).limit(100000 * 0.6);
-    for (const [{ acceleration }, entity] of app.query('gravity')) {
-      if (!app.hasComponent(entity, 'active')) {
-        app.addComponent(entity, active);
-      }
 
-      acceleration.addMut(v);
+    if (!isNaN(v.x) && !isNaN(v.y)) {
+      for (const [{ acceleration }, entity] of app.queryIter('gravity')) {
+        if (!app.hasComponent(entity, 'active')) {
+          app.addComponent(entity, active);
+        }
+
+        acceleration.addMut(v);
+      }
     }
 
     action.start.set(Infinity, Infinity);

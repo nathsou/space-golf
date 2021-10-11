@@ -35,7 +35,7 @@ const drawCircle = (
 };
 
 export const drawPlanetsSystem: System<Components, Resources> = (app: App<Components, Resources>) => {
-  for (const [{ position }, shape] of app.query('position', 'shape', 'attractor')) {
+  for (const [{ position }, shape] of app.queryIter('position', 'shape', 'attractor')) {
     if (shape.shape === 'circle') {
       drawCircle(app.resources.context, position, shape.radius, shape.color);
     }
@@ -43,7 +43,7 @@ export const drawPlanetsSystem: System<Components, Resources> = (app: App<Compon
 };
 
 export const drawBallsSystem: System<Components, Resources> = (app: App<Components, Resources>) => {
-  for (const [{ position }, shape] of app.query('position', 'shape', 'gravity')) {
+  for (const [{ position }, shape] of app.queryIter('position', 'shape', 'gravity')) {
     if (shape.shape === 'circle') {
       drawCircle(app.resources.context, position, shape.radius, shape.color);
     }
@@ -55,7 +55,7 @@ const drawArrowsSystem: System<Components, Resources> = (app: App<Components, Re
   if (action.start.x < Infinity) {
     const v = action.start.sub(action.end).times(0.5).limit(action.maxLength);
 
-    for (const [{ position }] of app.query('position', 'gravity')) {
+    for (const [{ position }] of app.queryIter('position', 'gravity')) {
       ctx.beginPath();
       ctx.strokeStyle = 'rgb(255, 255, 255)';
       ctx.moveTo(position.x, position.y);
@@ -68,7 +68,7 @@ const drawArrowsSystem: System<Components, Resources> = (app: App<Components, Re
 
 const drawTargetsSystem: System<Components, Resources> = (app: App<Components, Resources>) => {
   const { context: ctx } = app.resources;
-  for (const [{ target }] of app.query('target')) {
+  for (const [{ target }] of app.queryIter('target')) {
     ctx.beginPath();
     ctx.fillStyle = BACKGROUND_COLOR;
     ctx.arc(target.x, target.y, TARGET_RADIUS, 0, TWO_PI);
