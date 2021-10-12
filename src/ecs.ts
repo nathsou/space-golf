@@ -137,7 +137,7 @@ export class App<C extends Component<string>, R extends object = {}> {
     return tuples;
   }
 
-  public * queryIter<
+  public *queryIter<
     H extends C['__type'],
     T extends C['__type'][]
   >(head: H, ...tail: T): IterableIterator<MapComponentTypes<[H, ...T], C>> {
