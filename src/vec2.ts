@@ -111,7 +111,7 @@ export class Vec2 {
 
   public limit(maxLength: number): Vec2 {
     if (this.lengthSq() > maxLength * maxLength) {
-      return this.normalize().times(maxLength);
+      return this.normalize().timesMut(maxLength);
     }
 
     return this.clone();

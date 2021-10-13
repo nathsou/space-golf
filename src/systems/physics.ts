@@ -1,5 +1,5 @@
-import { Components } from "../components/components";
-import { combineSystems, System } from "../ecs";
+import { Components } from "../components";
+import { combineSystems, System } from "parsecs";
 import { Vec2 } from "../vec2";
 import { TARGET_RADIUS } from './draw';
 
@@ -17,11 +17,11 @@ const gravityForce = (
 const deltaT = 1 / 60;
 
 export const gravitySystem: System<Components> = app => {
-  const balls = app.queryIter('active', 'gravity', 'position', 'mass');
-  const planets = app.query('attractor', 'position', 'mass');
+  const balls = app.queryIter('active', 'movement', 'body');
+  const planets = app.query('attractor', 'body');
 
-  for (const [_, { velocity, acceleration }, { position: ballPos }, { mass: ballMass }] of balls) {
-    for (const [_, { position: planetPos }, { mass: planetMass }] of planets) {
+  for (const [_, { velocity, acceleration }, { position: ballPos, mass: ballMass }] of balls) {
+    for (const [_, { position: planetPos, mass: planetMass }] of planets) {
       const force = gravityForce(planetPos, planetMass, ballPos, ballMass);
       acceleration.addMut(force.div(ballMass));
     }
@@ -33,8 +33,8 @@ export const gravitySystem: System<Components> = app => {
 };
 
 export const collisionSystem: System<Components> = app => {
-  const balls = app.queryIter('active', 'gravity', 'position', 'shape');
-  const planets = app.query('attractor', 'position', 'shape');
+  const balls = app.queryIter('active', 'movement', 'body', 'shape');
+  const planets = app.query('attractor', 'body', 'shape');
 
   for (const [_, { velocity, prevPosition: prevBallPos }, { position: ballPos }, ballShape, ballEntity] of balls) {
     for (const [_, { position: planetPos }, planetShape, planetEntity] of planets) {

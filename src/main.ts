@@ -1,5 +1,5 @@
-import { Components } from './components/components';
-import { createApp } from './ecs';
+import { Components } from './components';
+import { createApp } from 'parsecs';
 import { Resources } from './resources';
 import { drawSystem } from './systems/draw';
 import { physicsSystem } from './systems/physics';

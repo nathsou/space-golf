@@ -1,18 +1,13 @@
-import { active } from "../components/active";
-import { attractor } from "../components/attractor";
-import { Components } from "../components/components";
-import { withGravity } from "../components/gravity";
-import { withShapeMass } from "../components/mass";
-import { withPosition } from "../components/position";
-import { withShape } from "../components/shape";
-import { withTarget } from "../components/target";
-import { ComponentArg, System } from "../ecs";
+import { Components } from "../components";
+import { System } from "parsecs";
 import { Resources } from "../resources";
 import { randomBetween, randomElement, randomInt } from "../utils";
 import { Vec2, vec2 } from "../vec2";
 import { randomColor, rgb } from "./draw";
 
 export const BALL_RADIUS = 4;
+
+const massFromRadius = (radius: number) => radius ** 2 * 1000000000;
 
 const randomPointOnPlanetSurface = (center: Vec2, radius: number, ballRadius = BALL_RADIUS): Vec2 => {
   const angle = randomBetween(0, 2 * Math.PI);
@@ -23,41 +18,50 @@ export const addPlanets = (count = 10): System<Components> => app => {
   for (let i = 0; i < count; i++) {
     const pos = vec2(randomInt(0, window.innerWidth), randomInt(0, window.innerHeight));
     const radius = randomInt(10, 60);
-    const components: ComponentArg<Components>[] = [
-      withPosition(pos),
-      withShape({
-        shape: 'circle',
-        color: randomColor(),
-        radius,
-      }),
-      withShapeMass,
-      attractor,
-    ];
+
+    const planet = app.addEntity([{
+      type: 'body',
+      position: pos,
+      mass: massFromRadius(radius),
+    }, {
+      type: 'shape',
+      kind: 'circle',
+      color: randomColor(),
+      radius,
+    }, {
+      type: 'attractor'
+    }]);
 
     if (i === count - 1) {
-      components.push(withTarget(randomPointOnPlanetSurface(pos, radius, 0)));
+      planet.add({
+        type: 'target',
+        target: randomPointOnPlanetSurface(pos, radius, 0)
+      });
     }
-
-    app.addEntity(...components);
   }
 };
 
 export const addBalls = (count = 1): System<Components> => app => {
-  const planets = app.query('position', 'shape', 'attractor');
+  const planets = app.query('body', 'shape', 'attractor');
 
   for (let i = 0; i < count; i++) {
     const [{ position: planetPos }, { radius: planetRadius }] = randomElement(planets);
 
-    app.addEntity(
-      withPosition(randomPointOnPlanetSurface(planetPos, planetRadius)),
-      withShape({
-        shape: 'circle',
-        radius: BALL_RADIUS,
-        color: rgb(255, 255, 255),
-      }),
-      withShapeMass,
-      withGravity(vec2(0, 0), vec2(0, 0)),
-    );
+    app.addEntity([{
+      type: 'body',
+      position: randomPointOnPlanetSurface(planetPos, planetRadius),
+      mass: massFromRadius(BALL_RADIUS),
+    }, {
+      type: 'movement',
+      acceleration: vec2(0, 0),
+      velocity: vec2(0, 0),
+      prevPosition: vec2(Infinity, Infinity),
+    }, {
+      type: 'shape',
+      kind: 'circle',
+      radius: BALL_RADIUS,
+      color: rgb(255, 255, 255),
+    }]);
   }
 };
 
@@ -77,9 +81,9 @@ export const addInputs: System<Components, Resources> = app => {
     const v = action.start.sub(action.end).times(500).limit(100000 * 0.6);
 
     if (!isNaN(v.x) && !isNaN(v.y)) {
-      for (const [{ acceleration }, entity] of app.queryIter('gravity')) {
+      for (const [{ acceleration }, entity] of app.queryIter('movement')) {
         if (!app.hasComponent(entity, 'active')) {
-          app.addComponent(entity, active);
+          app.addComponent(entity, { type: 'active' });
         }
 
         acceleration.addMut(v);

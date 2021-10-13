@@ -1,5 +1,5 @@
-import { Components } from "../components/components";
-import { App, combineSystems, System } from "../ecs";
+import { Components } from "../components";
+import { App, combineSystems, System } from 'parsecs';
 import { Resources } from "../resources";
 import { Vec2 } from "../vec2";
 import { BALL_RADIUS } from "./startup";
@@ -35,16 +35,16 @@ const drawCircle = (
 };
 
 export const drawPlanetsSystem: System<Components, Resources> = (app: App<Components, Resources>) => {
-  for (const [{ position }, shape] of app.queryIter('position', 'shape', 'attractor')) {
-    if (shape.shape === 'circle') {
+  for (const [{ position }, shape] of app.queryIter('body', 'shape', 'attractor')) {
+    if (shape.kind === 'circle') {
       drawCircle(app.resources.context, position, shape.radius, shape.color);
     }
   }
 };
 
 export const drawBallsSystem: System<Components, Resources> = (app: App<Components, Resources>) => {
-  for (const [{ position }, shape] of app.queryIter('position', 'shape', 'gravity')) {
-    if (shape.shape === 'circle') {
+  for (const [{ position }, shape] of app.queryIter('body', 'shape', 'movement')) {
+    if (shape.kind === 'circle') {
       drawCircle(app.resources.context, position, shape.radius, shape.color);
     }
   }
@@ -55,7 +55,7 @@ const drawArrowsSystem: System<Components, Resources> = (app: App<Components, Re
   if (action.start.x < Infinity) {
     const v = action.start.sub(action.end).times(0.5).limit(action.maxLength);
 
-    for (const [{ position }] of app.queryIter('position', 'gravity')) {
+    for (const [_, { position }] of app.queryIter('movement', 'body')) {
       ctx.beginPath();
       ctx.strokeStyle = 'rgb(255, 255, 255)';
       ctx.moveTo(position.x, position.y);
