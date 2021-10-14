@@ -12,7 +12,7 @@ export const rgb = (r: number, g: number, b: number): Color => ({ r, g, b });
 export const randomColor = () => rgb(Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256));
 const formatColor = ({ r, g, b }: Color) => `rgb(${r}, ${g}, ${b})`;
 
-const BACKGROUND_COLOR = 'rgb(0, 13, 36)';
+const BACKGROUND_COLOR = 'rgb(9, 7, 56)';
 
 export const clearCanvasSystem: System<Components, Resources> = (app: App<Components, Resources>) => {
   const { canvas, context: ctx } = app.resources;

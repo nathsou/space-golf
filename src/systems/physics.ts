@@ -2,6 +2,7 @@ import { Components } from "../components";
 import { combineSystems, System } from "parsecs";
 import { Vec2 } from "../vec2";
 import { TARGET_RADIUS } from './draw';
+import { Resources } from "../resources";
 
 const gravityForce = (
   planetPos: Vec2,
@@ -32,7 +33,7 @@ export const gravitySystem: System<Components> = app => {
   }
 };
 
-export const collisionSystem: System<Components> = app => {
+export const collisionSystem: System<Components, Resources> = app => {
   const balls = app.queryIter('active', 'movement', 'body', 'shape');
   const planets = app.query('attractor', 'body', 'shape');
 
@@ -50,6 +51,7 @@ export const collisionSystem: System<Components> = app => {
 
         if (isNearTarget) {
           contactPoint.copy(target.target);
+          app.resources.game.nextLevel();
         }
 
         ballPos.copy(contactPoint);

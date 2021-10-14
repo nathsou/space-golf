@@ -1,3 +1,4 @@
+import { BALL_RADIUS } from "./systems/startup";
 import { vec2, Vec2 } from "./vec2";
 
 export const randomBetween = (min: number, max: number) => min + Math.random() * (min - max);
@@ -11,7 +12,7 @@ type Circle = {
   radius: number,
 };
 
-const circlesTooClose = (a: Circle, b: Circle, minDist = 10) => {
+const circlesTooClose = (a: Circle, b: Circle, minDist = BALL_RADIUS * 2) => {
   return a.center.distSq(b.center) <= (a.radius + b.radius + minDist) ** 2;
 };
 

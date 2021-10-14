@@ -5,7 +5,7 @@ import { packCircles, randomBetween, randomElement } from "../utils";
 import { Vec2, vec2 } from "../vec2";
 import { randomColor, rgb } from "./draw";
 
-export const BALL_RADIUS = 4;
+export const BALL_RADIUS = 6;
 
 const massFromRadius = (radius: number) => radius ** 2 * 1000000000;
 
@@ -17,7 +17,7 @@ const randomPointOnPlanetSurface = (center: Vec2, radius: number, ballRadius = B
 export const addPlanets = (count = 10): System<Components> => app => {
   packCircles(
     count,
-    10,
+    20,
     60,
     window.innerWidth,
     window.innerHeight,

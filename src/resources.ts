@@ -1,3 +1,4 @@
+import { Game } from "./main";
 import { Vec2 } from "./vec2";
 
 export type Resources = {
@@ -8,4 +9,8 @@ export type Resources = {
     end: Vec2,
     maxLength: number,
   },
+  camera: {
+    offset: Vec2,
+  },
+  game: Game,
 };
