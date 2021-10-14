@@ -1,7 +1,7 @@
-import { Components } from "../components";
 import { System } from "parsecs";
+import { Components } from "../components";
 import { Resources } from "../resources";
-import { randomBetween, randomElement, randomInt } from "../utils";
+import { packCircles, randomBetween, randomElement } from "../utils";
 import { Vec2, vec2 } from "../vec2";
 import { randomColor, rgb } from "./draw";
 
@@ -15,13 +15,17 @@ const randomPointOnPlanetSurface = (center: Vec2, radius: number, ballRadius = B
 };
 
 export const addPlanets = (count = 10): System<Components> => app => {
-  for (let i = 0; i < count; i++) {
-    const pos = vec2(randomInt(0, window.innerWidth), randomInt(0, window.innerHeight));
-    const radius = randomInt(10, 60);
-
+  packCircles(
+    count,
+    10,
+    60,
+    window.innerWidth,
+    window.innerHeight,
+    'shrink'
+  ).forEach(({ center, radius }, i) => {
     const planet = app.addEntity([{
       type: 'body',
-      position: pos,
+      position: center,
       mass: massFromRadius(radius),
     }, {
       type: 'shape',
@@ -35,10 +39,10 @@ export const addPlanets = (count = 10): System<Components> => app => {
     if (i === count - 1) {
       planet.add({
         type: 'target',
-        target: randomPointOnPlanetSurface(pos, radius, 0)
+        target: randomPointOnPlanetSurface(center, radius, 0)
       });
     }
-  }
+  });
 };
 
 export const addBalls = (count = 1): System<Components> => app => {
