@@ -94,7 +94,10 @@ export class Vec2 {
   }
 
   public reflectMut(normal: Vec2): Vec2 {
-    return this.subMut(normal.times(2 * this.dot(normal)));
+    const d = 2 * this.dot(normal);
+    this.x -= normal.x * d;
+    this.y -= normal.y * d;
+    return this;
   }
 
   public reflect(normal: Vec2): Vec2 {

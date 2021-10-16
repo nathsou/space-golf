@@ -1,21 +1,6 @@
-import { BALL_RADIUS, MIN_DIST_BETWEEN_PLANETS } from "./systems/startup";
-import { vec2, Vec2 } from "./vec2";
-
-export const randomBetween = (min: number, max: number) => min + Math.random() * (min - max);
-
-export const randomInt = (min: number, max: number) => min + Math.floor(Math.random() * (max - min + 1));
-
-export const randomElement = <T>(elements: T[]) => elements[Math.floor(Math.random() * elements.length)];
-
-export const gaussRandom = (stdev: number, mean: number) => {
-  const x = Math.random() + Math.random() + Math.random() + Math.random() + Math.random();
-  return ((x - 2.5) * 0.5 * stdev) + mean;
-};
-
-export type Color = { r: number, g: number, b: number };
-export const rgb = (r: number, g: number, b: number): Color => ({ r, g, b });
-export const randomColor = () => rgb(randomInt(0, 255), randomInt(0, 255), randomInt(0, 255));
-export const formatColor = ({ r, g, b }: Color) => `rgb(${r}, ${g}, ${b})`;
+import { MIN_DIST_BETWEEN_PLANETS } from "../systems/startup";
+import { vec2, Vec2 } from "../vec2";
+import { randomInt } from "./rand";
 
 type Circle = {
   center: Vec2,

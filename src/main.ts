@@ -5,7 +5,7 @@ import { drawSystem } from './systems/draw';
 import { physicsSystem } from './systems/physics';
 import { addBalls, addPlanets, addInputs } from './systems/startup';
 import { Vec2, vec2 } from './vec2';
-import { gaussRandom } from './utils';
+import { gaussRandom } from './utils/rand';
 import { cameraSystem } from './systems/camera';
 
 type Camera = {
@@ -17,6 +17,7 @@ export class Game {
   public app: App<Components, Resources>;
   public canvas: HTMLCanvasElement;
   public camera: Camera;
+  public deltaT = 1 / 60;
 
   constructor() {
     const canvas = document.createElement('canvas');
@@ -47,7 +48,7 @@ export class Game {
       .addStartupSystem(addInputs)
       .addSystem(physicsSystem)
       .addSystem(drawSystem)
-      .addSystem(cameraSystem)
+      .addSystem(cameraSystem);
 
     this.nextLevel(true);
   }
@@ -79,3 +80,6 @@ const game = new Game();
 game.run();
 
 document.body.appendChild(game.canvas);
+
+/// @ts-ignore
+window['game'] = game;

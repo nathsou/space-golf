@@ -1,5 +1,5 @@
 import { ComponentTypes } from "parsecs";
-import { Color } from "./systems/draw";
+import { Color } from "./utils/color";
 import { Vec2 } from "./vec2";
 
 export type Components = ComponentTypes<{

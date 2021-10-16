@@ -1,7 +1,10 @@
 import { System } from "parsecs";
 import { Components } from "../components";
+import { memory } from "../memory";
 import { Resources } from "../resources";
-import { packCircles, randomBetween, randomElement, randomColor, rgb } from "../utils";
+import { packCircles } from "../utils/circlePacking";
+import { randomColor, rgb } from "../utils/color";
+import { randomBetween, randomElement } from "../utils/rand";
 import { Vec2, vec2 } from "../vec2";
 
 export const BALL_RADIUS = 6;
@@ -82,7 +85,11 @@ export const addInputs: System<Components, Resources> = app => {
   });
 
   canvas.addEventListener('pointerup', () => {
-    const v = action.start.sub(action.end).times(500).limit(100000 * 0.6);
+    const v = memory.v1
+      .copy(action.start)
+      .subMut(action.end)
+      .timesMut(500)
+      .limitMut(100000 * 0.6);
 
     if (!isNaN(v.x) && !isNaN(v.y)) {
       for (const [{ acceleration }, entity] of app.queryIter('movement')) {
@@ -96,5 +103,17 @@ export const addInputs: System<Components, Resources> = app => {
 
     action.start.set(Infinity, Infinity);
     action.end.set(Infinity, Infinity);
+  });
+
+  window.addEventListener('keydown', event => {
+    if (event.key === ' ') {
+      app.resources.game.deltaT = 1 / 20;
+    }
+  });
+
+  window.addEventListener('keyup', event => {
+    if (event.key === ' ') {
+      app.resources.game.deltaT = 1 / 60;
+    }
   });
 };

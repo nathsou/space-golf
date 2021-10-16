@@ -3,7 +3,8 @@ import { App, combineSystems, System } from 'parsecs';
 import { Resources } from "../resources";
 import { Vec2 } from "../vec2";
 import { BALL_RADIUS } from "./startup";
-import { Color, formatColor } from "../utils";
+import { Color, formatColor } from "../utils/color";
+import { memory } from "../memory";
 
 const TWO_PI = 2 * Math.PI;
 export const TARGET_RADIUS = BALL_RADIUS * 2;
@@ -35,7 +36,7 @@ export const drawPlanetsSystem: System<Components, Resources> = (app: App<Compon
     if (shape.kind === 'circle') {
       drawCircle(
         app.resources.context,
-        position.add(app.resources.game.camera.offset),
+        memory.v1.copy(position).addMut(app.resources.game.camera.offset),
         shape.radius,
         shape.color
       );
@@ -46,7 +47,7 @@ export const drawPlanetsSystem: System<Components, Resources> = (app: App<Compon
 export const drawBallsSystem: System<Components, Resources> = (app: App<Components, Resources>) => {
   for (const [{ position }, shape] of app.queryIter('body', 'shape', 'movement')) {
     if (shape.kind === 'circle') {
-      const pos = position.add(app.resources.game.camera.offset);
+      const pos = memory.v1.copy(position).addMut(app.resources.game.camera.offset);
       drawCircle(app.resources.context, pos, shape.radius, shape.color);
     }
   }
@@ -57,7 +58,12 @@ const drawArrowsSystem: System<Components, Resources> = (app: App<Components, Re
   const offset = app.resources.game.camera.offset;
 
   if (action.start.x < Infinity) {
-    const v = action.start.sub(action.end).times(0.5).limit(action.maxLength);
+    const v = memory.v1
+      .copy(action.start)
+      .subMut(action.end)
+      .timesMut(0.5)
+      .limitMut(action.maxLength);
+
     for (const [_, { position }] of app.queryIter('movement', 'body')) {
       ctx.beginPath();
       ctx.strokeStyle = 'rgb(255, 255, 255)';
