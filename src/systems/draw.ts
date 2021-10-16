@@ -3,14 +3,10 @@ import { App, combineSystems, System } from 'parsecs';
 import { Resources } from "../resources";
 import { Vec2 } from "../vec2";
 import { BALL_RADIUS } from "./startup";
+import { Color, formatColor } from "../utils";
 
 const TWO_PI = 2 * Math.PI;
 export const TARGET_RADIUS = BALL_RADIUS * 2;
-
-export type Color = { r: number, g: number, b: number };
-export const rgb = (r: number, g: number, b: number): Color => ({ r, g, b });
-export const randomColor = () => rgb(Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256));
-const formatColor = ({ r, g, b }: Color) => `rgb(${r}, ${g}, ${b})`;
 
 const BACKGROUND_COLOR = 'rgb(9, 7, 56)';
 
@@ -37,7 +33,12 @@ const drawCircle = (
 export const drawPlanetsSystem: System<Components, Resources> = (app: App<Components, Resources>) => {
   for (const [{ position }, shape] of app.queryIter('body', 'shape', 'attractor')) {
     if (shape.kind === 'circle') {
-      drawCircle(app.resources.context, position, shape.radius, shape.color);
+      drawCircle(
+        app.resources.context,
+        position.add(app.resources.game.camera.offset),
+        shape.radius,
+        shape.color
+      );
     }
   }
 };
@@ -45,21 +46,23 @@ export const drawPlanetsSystem: System<Components, Resources> = (app: App<Compon
 export const drawBallsSystem: System<Components, Resources> = (app: App<Components, Resources>) => {
   for (const [{ position }, shape] of app.queryIter('body', 'shape', 'movement')) {
     if (shape.kind === 'circle') {
-      drawCircle(app.resources.context, position, shape.radius, shape.color);
+      const pos = position.add(app.resources.game.camera.offset);
+      drawCircle(app.resources.context, pos, shape.radius, shape.color);
     }
   }
 };
 
 const drawArrowsSystem: System<Components, Resources> = (app: App<Components, Resources>) => {
   const { context: ctx, action } = app.resources;
+  const offset = app.resources.game.camera.offset;
+
   if (action.start.x < Infinity) {
     const v = action.start.sub(action.end).times(0.5).limit(action.maxLength);
-
     for (const [_, { position }] of app.queryIter('movement', 'body')) {
       ctx.beginPath();
       ctx.strokeStyle = 'rgb(255, 255, 255)';
-      ctx.moveTo(position.x, position.y);
-      ctx.lineTo(position.x + v.x, position.y + v.y);
+      ctx.moveTo(position.x + offset.x, position.y + offset.y);
+      ctx.lineTo(position.x + offset.x + v.x, position.y + offset.y + v.y);
       ctx.closePath();
       ctx.stroke();
     }
@@ -68,10 +71,13 @@ const drawArrowsSystem: System<Components, Resources> = (app: App<Components, Re
 
 const drawTargetsSystem: System<Components, Resources> = (app: App<Components, Resources>) => {
   const { context: ctx } = app.resources;
+  const offset = app.resources.game.camera.offset;
+
   for (const [{ target }] of app.queryIter('target')) {
     ctx.beginPath();
     ctx.fillStyle = BACKGROUND_COLOR;
-    ctx.arc(target.x, target.y, TARGET_RADIUS, 0, TWO_PI);
+
+    ctx.arc(target.x + offset.x, target.y + offset.y, TARGET_RADIUS, 0, TWO_PI);
     ctx.closePath();
     ctx.fill();
   }

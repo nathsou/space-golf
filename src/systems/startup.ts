@@ -1,13 +1,13 @@
 import { System } from "parsecs";
 import { Components } from "../components";
 import { Resources } from "../resources";
-import { packCircles, randomBetween, randomElement } from "../utils";
+import { packCircles, randomBetween, randomElement, randomColor, rgb } from "../utils";
 import { Vec2, vec2 } from "../vec2";
-import { randomColor, rgb } from "./draw";
 
 export const BALL_RADIUS = 6;
+export const MIN_DIST_BETWEEN_PLANETS = BALL_RADIUS * 4;
 
-const massFromRadius = (radius: number) => radius ** 2 * 1000000000;
+const massFromRadius = (radius: number) => radius ** 2 * 700000000;
 
 const randomPointOnPlanetSurface = (center: Vec2, radius: number, ballRadius = BALL_RADIUS): Vec2 => {
   const angle = randomBetween(0, 2 * Math.PI);
@@ -17,11 +17,11 @@ const randomPointOnPlanetSurface = (center: Vec2, radius: number, ballRadius = B
 export const addPlanets = (count = 10): System<Components> => app => {
   packCircles(
     count,
-    20,
-    60,
+    40,
+    90,
     window.innerWidth,
     window.innerHeight,
-    'shrink'
+    'retry'
   ).forEach(({ center, radius }, i) => {
     const planet = app.addEntity([{
       type: 'body',

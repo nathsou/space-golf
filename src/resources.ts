@@ -9,8 +9,5 @@ export type Resources = {
     end: Vec2,
     maxLength: number,
   },
-  camera: {
-    offset: Vec2,
-  },
   game: Game,
 };
