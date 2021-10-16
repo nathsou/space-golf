@@ -4,7 +4,7 @@ import { memory } from "../memory";
 import { Resources } from "../resources";
 import { packCircles } from "../utils/circlePacking";
 import { randomColor, rgb } from "../utils/color";
-import { randomBetween, randomElement } from "../utils/rand";
+import { randomBetween } from "../utils/rand";
 import { Vec2, vec2 } from "../vec2";
 
 export const BALL_RADIUS = 6;
@@ -51,9 +51,14 @@ export const addPlanets = (count = 10): System<Components> => app => {
 export const addBalls = (count = 1): System<Components> => app => {
   const planets = app.query('body', 'shape', 'attractor');
 
-  for (let i = 0; i < count; i++) {
-    const [{ position: planetPos }, { radius: planetRadius }] = randomElement(planets);
+  const [
+    { position: planetPos },
+    { radius: planetRadius }
+  ] = planets.find(([_b, _s, _q, entity]) =>
+    !app.hasComponent(entity, 'target') || planets.length === 1
+  ) as (typeof planets)[number];
 
+  for (let i = 0; i < count; i++) {
     app.addEntity([{
       type: 'body',
       position: randomPointOnPlanetSurface(planetPos, planetRadius),

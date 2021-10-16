@@ -7,6 +7,7 @@ import { addBalls, addPlanets, addInputs } from './systems/startup';
 import { Vec2, vec2 } from './vec2';
 import { gaussRandom } from './utils/rand';
 import { cameraSystem } from './systems/camera';
+import { StarMap } from './starMap';
 
 type Camera = {
   offset: Vec2,
@@ -44,6 +45,7 @@ export class Game {
         maxLength: 150,
       },
       game: this,
+      stars: new StarMap(),
     })
       .addStartupSystem(addInputs)
       .addSystem(physicsSystem)
@@ -55,16 +57,15 @@ export class Game {
 
   public nextLevel(immediate = false) {
     const initLevel = combineSystems(
-      addPlanets(Math.round(gaussRandom(2, 4))),
+      addPlanets(Math.round(gaussRandom(4, 2))),
       addBalls(1),
     );
 
     this.app.removeSystem(physicsSystem);
 
     setTimeout(() => {
-      for (const entity of this.app.getEntities()) {
-        this.app.removeEntity(entity);
-      }
+      this.app.clearEntities();
+      this.app.resources.stars.clear();
 
       initLevel(this.app);
       this.app.addSystem(physicsSystem);

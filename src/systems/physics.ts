@@ -18,11 +18,10 @@ const gravityForce = (
 
 export const gravitySystem: System<Components, Resources> = app => {
   const balls = app.queryIter('active', 'movement', 'body');
-  const planets = app.query('attractor', 'body');
   const deltaT = app.resources.game.deltaT;
 
   for (const [_, { velocity, acceleration }, { position: ballPos, mass: ballMass }] of balls) {
-    for (const [_, { position: planetPos, mass: planetMass }] of planets) {
+    for (const [_, { position: planetPos, mass: planetMass }] of app.queryIter('attractor', 'body')) {
       const force = gravityForce(planetPos, planetMass, ballPos, ballMass);
       acceleration.addMut(force.divMut(ballMass));
     }
@@ -35,10 +34,9 @@ export const gravitySystem: System<Components, Resources> = app => {
 
 export const collisionSystem: System<Components, Resources> = app => {
   const balls = app.queryIter('active', 'movement', 'body', 'shape');
-  const planets = app.query('attractor', 'body', 'shape');
 
   for (const [_, { velocity, prevPosition: prevBallPos }, { position: ballPos }, ballShape, ballEntity] of balls) {
-    for (const [_, { position: planetPos }, planetShape, planetEntity] of planets) {
+    for (const [_, { position: planetPos }, planetShape, planetEntity] of app.queryIter('attractor', 'body', 'shape')) {
       const radiusSum = ballShape.radius + planetShape.radius;
 
       if (ballPos.distSq(planetPos) <= radiusSum ** 2) {

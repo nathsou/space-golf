@@ -1,10 +1,11 @@
-import { Components } from "../components";
 import { App, combineSystems, System } from 'parsecs';
+import { Components } from "../components";
+import { memory } from "../memory";
 import { Resources } from "../resources";
+import { StarMap } from "../starMap";
+import { formatColor } from "../utils/color";
 import { Vec2 } from "../vec2";
 import { BALL_RADIUS } from "./startup";
-import { Color, formatColor } from "../utils/color";
-import { memory } from "../memory";
 
 const TWO_PI = 2 * Math.PI;
 export const TARGET_RADIUS = BALL_RADIUS * 2;
@@ -22,10 +23,10 @@ const drawCircle = (
   ctx: CanvasRenderingContext2D,
   center: Vec2,
   radius: number,
-  color: Color
+  color: string
 ): void => {
   ctx.beginPath();
-  ctx.fillStyle = formatColor(color);
+  ctx.fillStyle = color;
   ctx.arc(center.x, center.y, radius, 0, TWO_PI);
   ctx.closePath();
   ctx.fill();
@@ -38,7 +39,7 @@ export const drawPlanetsSystem: System<Components, Resources> = (app: App<Compon
         app.resources.context,
         memory.v1.copy(position).addMut(app.resources.game.camera.offset),
         shape.radius,
-        shape.color
+        formatColor(shape.color)
       );
     }
   }
@@ -48,7 +49,7 @@ export const drawBallsSystem: System<Components, Resources> = (app: App<Componen
   for (const [{ position }, shape] of app.queryIter('body', 'shape', 'movement')) {
     if (shape.kind === 'circle') {
       const pos = memory.v1.copy(position).addMut(app.resources.game.camera.offset);
-      drawCircle(app.resources.context, pos, shape.radius, shape.color);
+      drawCircle(app.resources.context, pos, shape.radius, formatColor(shape.color));
     }
   }
 };
@@ -75,7 +76,7 @@ const drawArrowsSystem: System<Components, Resources> = (app: App<Components, Re
   }
 };
 
-const drawTargetsSystem: System<Components, Resources> = (app: App<Components, Resources>) => {
+const drawTargetsSystem: System<Components, Resources> = app => {
   const { context: ctx } = app.resources;
   const offset = app.resources.game.camera.offset;
 
@@ -89,8 +90,24 @@ const drawTargetsSystem: System<Components, Resources> = (app: App<Components, R
   }
 };
 
+const STAR_COLOR = 'rgb(234, 231, 163)';
+
+const drawStarsSystem: System<Components, Resources> = app => {
+  const { context: ctx, stars } = app.resources;
+  const offset = app.resources.game.camera.offset;
+
+  for (const tile of stars.visibleTiles(offset, ctx.canvas.width, ctx.canvas.height)) {
+    for (const { center, radius } of tile.stars) {
+      const x = offset.x - center.x + ctx.canvas.width - StarMap.TILE_SIZE;
+      const y = offset.y - center.y + ctx.canvas.height - StarMap.TILE_SIZE;
+      drawCircle(ctx, memory.v1.set(x, y), radius, STAR_COLOR);
+    }
+  }
+};
+
 export const drawSystem = combineSystems(
   clearCanvasSystem,
+  drawStarsSystem,
   drawPlanetsSystem,
   drawTargetsSystem,
   drawBallsSystem,

@@ -8,7 +8,7 @@
     "serve": "vite preview"
   },
   "dependencies": {
-    "parsecs": "^0.1.2"
+    "parsecs": "^0.1.3"
   },
   "devDependencies": {
     "typescript": "^4.3.2",

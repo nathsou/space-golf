@@ -139,10 +139,10 @@ nanoid@^3.1.28:
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.1.30.tgz#63f93cc548d2a113dc5dfbc63bfa09e2b9b64362"
   integrity sha512-zJpuPDwOv8D2zq2WRoMe1HsfZthVewpel9CAvTfc/2mBD1uUT/agc5f7GHGWXlYkFvi1mVxe4IjvP2HNrop7nQ==
 
-parsecs@^0.1.2:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/parsecs/-/parsecs-0.1.2.tgz#97377f8a2896bf0fbf60cdc4646faecb5a27104b"
-  integrity sha512-piR9IF3K9ScI6bWGrXi5tOu2+UwauiBP359ryIfytMmYlJhzPnkBvo9RkSQ7j78NTW39Z3SIAOsVSaK2dQi3/w==
+parsecs@^0.1.3:
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/parsecs/-/parsecs-0.1.3.tgz#879afee951cda3ddbb5b77d5f4443f4ee38da707"
+  integrity sha512-yBKBFKD9cARfEKhfCqKHXfT7gdtQ81V1/5kr+gC3C1eCyRG3qwNygi0gMDDPTilwahuvToobT5I7NP9xZZoV8A==
 
 path-parse@^1.0.6:
   version "1.0.7"

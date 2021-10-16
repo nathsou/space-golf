@@ -10,7 +10,7 @@ export const randomElement = <T>(elements: T[]) => {
   return elements[Math.floor(Math.random() * elements.length)];
 }
 
-export const gaussRandom = (stdev: number, mean: number) => {
+export const gaussRandom = (mean: number, stdev: number) => {
   const x =
     Math.random() + Math.random() +
     Math.random() + Math.random() +

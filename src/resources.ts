@@ -1,4 +1,5 @@
 import { Game } from "./main";
+import { StarMap } from "./starMap";
 import { Vec2 } from "./vec2";
 
 export type Resources = {
@@ -10,4 +11,5 @@ export type Resources = {
     maxLength: number,
   },
   game: Game,
+  stars: StarMap,
 };
