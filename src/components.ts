@@ -1,5 +1,4 @@
 import { ComponentTypes } from "parsecs";
-import { Circle } from "./utils/circlePacking";
 import { Vec2 } from "./vec2";
 
 export type Components = ComponentTypes<{
@@ -17,5 +16,4 @@ export type Components = ComponentTypes<{
   attractor: {},
   active: {},
   target: { target: Vec2 },
-  starTile: { stars: Circle[], position: Vec2 },
 }>;

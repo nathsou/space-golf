@@ -74,6 +74,11 @@ export class Game {
     setTimeout(() => {
       this.app.clearEntities();
       this.app.resources.stars.clear();
+      this.app.resources.stars.setStaticRegion(
+        Vec2.v1.set(0, 0),
+        this.canvas.width,
+        this.canvas.height
+      );
 
       initLevel(this.app);
       this.app.addSystem(physicsSystem);

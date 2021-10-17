@@ -5,21 +5,44 @@ import { vec2, Vec2 } from "./vec2";
 export type StarTile = {
   stars: Circle[],
   position: Vec2,
+  lastAccessed: number,
+  static: boolean,
 };
 
 type TilePos = `${number}:${number}`;
 
 export class StarMap {
-  public static TILE_SIZE = 512;
+  public static TILE_SIZE = 1024;
   private tiles: Map<TilePos, StarTile>;
+  private static MAX_CACHE_SIZE = 200;
+  private static UNUSED_THRESHOLD = 5 * 1000;
 
   constructor() {
     this.tiles = new Map();
   }
 
-  private createTile(position: Vec2): StarTile {
+  public setStaticRegion(topLeft: Vec2, width: number, height: number): void {
+    for (const tile of this.visibleTiles(topLeft, width, height)) {
+      tile.static = true;
+    }
+  }
+
+  private removeUnused(): void {
+    const now = Date.now();
+    for (const [pos, tile] of this.tiles.entries()) {
+      if (!tile.static && now - tile.lastAccessed > StarMap.UNUSED_THRESHOLD) {
+        this.tiles.delete(pos);
+      }
+    }
+  }
+
+  private createTile(position: Vec2, isStatic = false): StarTile {
+    if (this.tiles.size >= StarMap.MAX_CACHE_SIZE) {
+      this.removeUnused();
+    }
+
     const stars: Circle[] = [];
-    const count = gaussRandom(10, 4);
+    const count = gaussRandom(20, 10);
     for (let i = 0; i < count; i++) {
       stars.push({
         center: vec2(
@@ -30,13 +53,20 @@ export class StarMap {
       });
     }
 
-    return { stars, position };
+    return {
+      stars,
+      position,
+      lastAccessed: Date.now(),
+      static: isStatic
+    };
   }
 
   public tileAt(x: number, y: number): StarTile {
     const key: TilePos = `${x}:${y}`;
     if (this.tiles.has(key)) {
-      return this.tiles.get(key) as StarTile;
+      const tile = this.tiles.get(key) as StarTile;
+      tile.lastAccessed = Date.now();
+      return tile;
     }
 
     const tile = this.createTile(vec2(
