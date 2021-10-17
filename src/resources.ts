@@ -10,6 +10,7 @@ export type Resources = {
     end: Vec2,
     maxLength: number,
   },
+  screenSizeFactor: number,
   game: Game,
   stars: StarMap,
 };

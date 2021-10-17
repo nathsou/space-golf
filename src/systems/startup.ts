@@ -9,7 +9,7 @@ import { Vec2, vec2 } from "../vec2";
 export const BALL_RADIUS = 6;
 export const MIN_DIST_BETWEEN_PLANETS = BALL_RADIUS * 4;
 
-const massFromRadius = (radius: number) => radius ** 2 * 700000000;
+const massFromRadius = (radius: number) => radius ** 2 * 2700;
 
 const randomPointOnPlanetSurface = (center: Vec2, radius: number, ballRadius = BALL_RADIUS): Vec2 => {
   const angle = randomBetween(0, 2 * Math.PI);

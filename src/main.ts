@@ -50,10 +50,12 @@ export class Game {
       action: {
         start: vec2(Infinity, Infinity),
         end: vec2(Infinity, Infinity),
-        maxLength: 150,
+        maxLength: 180,
       },
       game: this,
       stars: new StarMap(),
+      // screenSizeFactor: window.innerWidth / 1000,
+      screenSizeFactor: 1,
     })
       .addStartupSystem(addInputs)
       .addSystem(physicsSystem)
@@ -69,8 +71,6 @@ export class Game {
       addBalls(1),
     );
 
-    this.app.removeSystem(physicsSystem);
-
     setTimeout(() => {
       this.app.clearEntities();
       this.app.resources.stars.clear();
@@ -81,7 +81,6 @@ export class Game {
       );
 
       initLevel(this.app);
-      this.app.addSystem(physicsSystem);
     }, immediate ? 0 : 1000);
   }
 

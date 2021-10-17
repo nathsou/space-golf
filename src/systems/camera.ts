@@ -18,16 +18,16 @@ export const cameraSystem: System<Components, Resources> = app => {
       offset.x = -position.x;
     }
 
-    if (position.x > canvas.width) {
-      offset.x = -(position.x - canvas.width);
+    if (position.x > canvas.width / 2) {
+      offset.x = canvas.width / 2 - position.x;
     }
 
     if (position.y < 0) {
       offset.y = -position.y;
     }
 
-    if (position.y > canvas.height) {
-      offset.y = -(position.y - canvas.height);
+    if (position.y > canvas.height / 2) {
+      offset.y = canvas.height / 2 - position.y;
     }
 
     if (offset.x !== 0 || offset.y !== 0) {
@@ -41,10 +41,10 @@ export const cameraSystem: System<Components, Resources> = app => {
 
     camera.targetOffset.copy(offset);
     camera.offset.addMut(
-      Vec2.v2
+      Vec2.v3
         .copy(camera.targetOffset)
         .subMut(camera.offset)
-        .timesMut(0.06)
+        .timesMut(0.05)
     );
   }
 };

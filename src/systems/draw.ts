@@ -44,10 +44,11 @@ export const drawPlanetsSystem: System<Components, Resources> = (app: App<Compon
 };
 
 export const drawBallsSystem: System<Components, Resources> = (app: App<Components, Resources>) => {
-  for (const [{ position }, shape] of app.queryIter('body', 'shape', 'movement')) {
+  for (const [{ position }, shape, _, entity] of app.queryIter('body', 'shape', 'movement')) {
     if (shape.kind === 'circle') {
       const pos = Vec2.v1.copy(position).addMut(app.resources.game.camera.offset);
-      drawCircle(app.resources.context, pos, shape.radius, shape.color);
+      const color = app.hasComponent(entity, 'active') ? shape.color : 'lightgrey';
+      drawCircle(app.resources.context, pos, shape.radius, color);
     }
   }
 };

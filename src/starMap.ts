@@ -5,7 +5,7 @@ import { vec2, Vec2 } from "./vec2";
 export type StarTile = {
   stars: Circle[],
   position: Vec2,
-  lastAccessed: number,
+  lastUsed: number,
   static: boolean,
 };
 
@@ -15,7 +15,7 @@ export class StarMap {
   public static TILE_SIZE = 1024;
   private tiles: Map<TilePos, StarTile>;
   private static MAX_CACHE_SIZE = 200;
-  private static UNUSED_THRESHOLD = 5 * 1000;
+  private static UNUSED_THRESHOLD = 10 * 1000;
 
   constructor() {
     this.tiles = new Map();
@@ -29,8 +29,9 @@ export class StarMap {
 
   private removeUnused(): void {
     const now = Date.now();
+    const adjustedThreshold = StarMap.UNUSED_THRESHOLD * Math.exp(-(this.tiles.size - StarMap.MAX_CACHE_SIZE) / 90);
     for (const [pos, tile] of this.tiles.entries()) {
-      if (!tile.static && now - tile.lastAccessed > StarMap.UNUSED_THRESHOLD) {
+      if (!tile.static && now - tile.lastUsed > adjustedThreshold) {
         this.tiles.delete(pos);
       }
     }
@@ -56,7 +57,7 @@ export class StarMap {
     return {
       stars,
       position,
-      lastAccessed: Date.now(),
+      lastUsed: Date.now(),
       static: isStatic
     };
   }
@@ -65,7 +66,7 @@ export class StarMap {
     const key: TilePos = `${x}:${y}`;
     if (this.tiles.has(key)) {
       const tile = this.tiles.get(key) as StarTile;
-      tile.lastAccessed = Date.now();
+      tile.lastUsed = Date.now();
       return tile;
     }
 
