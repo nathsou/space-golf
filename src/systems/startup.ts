@@ -1,9 +1,8 @@
 import { System } from "parsecs";
 import { Components } from "../components";
-import { memory } from "../memory";
 import { Resources } from "../resources";
 import { packCircles } from "../utils/circlePacking";
-import { randomColor, rgb } from "../utils/color";
+import { randomPalette } from "../utils/color";
 import { randomBetween } from "../utils/rand";
 import { Vec2, vec2 } from "../vec2";
 
@@ -18,6 +17,7 @@ const randomPointOnPlanetSurface = (center: Vec2, radius: number, ballRadius = B
 };
 
 export const addPlanets = (count = 10): System<Components> => app => {
+  const nextColor = randomPalette();
   packCircles(
     count,
     40,
@@ -33,7 +33,7 @@ export const addPlanets = (count = 10): System<Components> => app => {
     }, {
       type: 'shape',
       kind: 'circle',
-      color: randomColor(),
+      color: nextColor(),
       radius,
     }, {
       type: 'attractor'
@@ -72,7 +72,7 @@ export const addBalls = (count = 1): System<Components> => app => {
       type: 'shape',
       kind: 'circle',
       radius: BALL_RADIUS,
-      color: rgb(255, 255, 255),
+      color: 'rgb(255, 255, 255)',
     }]);
   }
 };
@@ -90,7 +90,7 @@ export const addInputs: System<Components, Resources> = app => {
   });
 
   canvas.addEventListener('pointerup', () => {
-    const v = memory.v1
+    const v = Vec2.v1
       .copy(action.start)
       .subMut(action.end)
       .timesMut(500)

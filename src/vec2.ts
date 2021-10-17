@@ -3,6 +3,10 @@ export class Vec2 {
   public x: number;
   public y: number;
 
+  public static v1 = new Vec2(0, 0);
+  public static v2 = new Vec2(0, 0);
+  public static v3 = new Vec2(0, 0);
+
   constructor(x: number, y: number) {
     this.x = x;
     this.y = y;

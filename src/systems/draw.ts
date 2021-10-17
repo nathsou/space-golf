@@ -1,9 +1,7 @@
 import { App, combineSystems, System } from 'parsecs';
 import { Components } from "../components";
-import { memory } from "../memory";
 import { Resources } from "../resources";
 import { StarMap } from "../starMap";
-import { formatColor } from "../utils/color";
 import { Vec2 } from "../vec2";
 import { BALL_RADIUS } from "./startup";
 
@@ -37,9 +35,9 @@ export const drawPlanetsSystem: System<Components, Resources> = (app: App<Compon
     if (shape.kind === 'circle') {
       drawCircle(
         app.resources.context,
-        memory.v1.copy(position).addMut(app.resources.game.camera.offset),
+        Vec2.v1.copy(position).addMut(app.resources.game.camera.offset),
         shape.radius,
-        formatColor(shape.color)
+        shape.color,
       );
     }
   }
@@ -48,8 +46,8 @@ export const drawPlanetsSystem: System<Components, Resources> = (app: App<Compon
 export const drawBallsSystem: System<Components, Resources> = (app: App<Components, Resources>) => {
   for (const [{ position }, shape] of app.queryIter('body', 'shape', 'movement')) {
     if (shape.kind === 'circle') {
-      const pos = memory.v1.copy(position).addMut(app.resources.game.camera.offset);
-      drawCircle(app.resources.context, pos, shape.radius, formatColor(shape.color));
+      const pos = Vec2.v1.copy(position).addMut(app.resources.game.camera.offset);
+      drawCircle(app.resources.context, pos, shape.radius, shape.color);
     }
   }
 };
@@ -59,7 +57,7 @@ const drawArrowsSystem: System<Components, Resources> = (app: App<Components, Re
   const offset = app.resources.game.camera.offset;
 
   if (action.start.x < Infinity) {
-    const v = memory.v1
+    const v = Vec2.v1
       .copy(action.start)
       .subMut(action.end)
       .timesMut(0.5)
@@ -100,7 +98,7 @@ const drawStarsSystem: System<Components, Resources> = app => {
     for (const { center, radius } of tile.stars) {
       const x = offset.x - center.x + ctx.canvas.width - StarMap.TILE_SIZE;
       const y = offset.y - center.y + ctx.canvas.height - StarMap.TILE_SIZE;
-      drawCircle(ctx, memory.v1.set(x, y), radius, STAR_COLOR);
+      drawCircle(ctx, Vec2.v1.set(x, y), radius, STAR_COLOR);
     }
   }
 };

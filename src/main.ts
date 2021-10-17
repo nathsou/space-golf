@@ -27,9 +27,17 @@ export class Game {
     canvas.height = window.innerHeight;
     const context = canvas.getContext('2d');
 
+    const dpr = window.devicePixelRatio;
+    canvas.style.width = window.innerWidth + 'px';
+    canvas.style.height = window.innerHeight + 'px';
+    canvas.width = Math.floor(window.innerWidth * dpr);
+    canvas.height = Math.floor(window.innerHeight * dpr);
+
     if (context === null) {
       throw `could not get canvas 2d context`;
     }
+
+    context.scale(dpr, dpr);
 
     this.camera = {
       offset: vec2(0, 0),

@@ -3,7 +3,6 @@ import { combineSystems, System } from "parsecs";
 import { Vec2 } from "../vec2";
 import { TARGET_RADIUS } from './draw';
 import { Resources } from "../resources";
-import { memory } from "../memory";
 
 const gravityForce = (
   planetPos: Vec2,
@@ -11,7 +10,7 @@ const gravityForce = (
   ballPos: Vec2,
   ballMass: number
 ): Vec2 => {
-  const dir = memory.v1.copy(planetPos).subMut(ballPos);
+  const dir = Vec2.v1.copy(planetPos).subMut(ballPos);
   const len = 0.00001 * ((ballMass * planetMass) / dir.lengthSq());
   return dir.normalizeMut().timesMut(len);
 };
@@ -26,8 +25,8 @@ export const gravitySystem: System<Components, Resources> = app => {
       acceleration.addMut(force.divMut(ballMass));
     }
 
-    velocity.addMut(memory.v1.copy(acceleration).timesMut(deltaT));
-    ballPos.addMut(memory.v1.copy(velocity).timesMut(deltaT));
+    velocity.addMut(Vec2.v1.copy(acceleration).timesMut(deltaT));
+    ballPos.addMut(Vec2.v1.copy(velocity).timesMut(deltaT));
     acceleration.set(0, 0);
   }
 };
@@ -40,9 +39,9 @@ export const collisionSystem: System<Components, Resources> = app => {
       const radiusSum = ballShape.radius + planetShape.radius;
 
       if (ballPos.distSq(planetPos) <= radiusSum ** 2) {
-        const normal = memory.v1.copy(ballPos).subMut(planetPos).normalizeMut();
-        const contactPoint = memory.v2.copy(planetPos).addMut(
-          memory.v3.copy(normal).timesMut(radiusSum)
+        const normal = Vec2.v1.copy(ballPos).subMut(planetPos).normalizeMut();
+        const contactPoint = Vec2.v2.copy(planetPos).addMut(
+          Vec2.v3.copy(normal).timesMut(radiusSum)
         );
 
         velocity.reflectMut(normal).timesMut(0.8);

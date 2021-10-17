@@ -1,6 +1,5 @@
 import { ComponentTypes } from "parsecs";
 import { Circle } from "./utils/circlePacking";
-import { Color } from "./utils/color";
 import { Vec2 } from "./vec2";
 
 export type Components = ComponentTypes<{
@@ -13,7 +12,7 @@ export type Components = ComponentTypes<{
   shape: {
     kind: 'circle',
     radius: number,
-    color: Color,
+    color: string,
   },
   attractor: {},
   active: {},
