@@ -1,5 +1,5 @@
 import { MIN_DIST_BETWEEN_PLANETS } from "../systems/startup";
-import { vec2, Vec2 } from "../vec2";
+import { vec2, Vec2 } from "./vec2";
 import { randomInt } from "./rand";
 
 export type Circle = {

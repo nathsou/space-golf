@@ -4,7 +4,7 @@ import { Resources } from './resources';
 import { drawSystem } from './systems/draw';
 import { physicsSystem } from './systems/physics';
 import { addBalls, addPlanets, addInputs } from './systems/startup';
-import { Vec2, vec2 } from './vec2';
+import { Vec2, vec2 } from './utils/vec2';
 import { gaussRandom } from './utils/rand';
 import { cameraSystem } from './systems/camera';
 import { StarMap } from './starMap';
@@ -50,12 +50,10 @@ export class Game {
       action: {
         start: vec2(Infinity, Infinity),
         end: vec2(Infinity, Infinity),
-        maxLength: 180,
+        maxLength: 150,
       },
       game: this,
       stars: new StarMap(),
-      // screenSizeFactor: window.innerWidth / 1000,
-      screenSizeFactor: 1,
     })
       .addStartupSystem(addInputs)
       .addSystem(physicsSystem)

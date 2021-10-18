@@ -1,8 +1,8 @@
 import { App, combineSystems, System } from 'parsecs';
-import { Components } from "../components";
+import { BALLS, Components, MOVING_BODIES, PLANETS, TARGETS } from "../components";
 import { Resources } from "../resources";
 import { StarMap } from "../starMap";
-import { Vec2 } from "../vec2";
+import { Vec2 } from "../utils/vec2";
 import { BALL_RADIUS } from "./startup";
 
 const TWO_PI = 2 * Math.PI;
@@ -31,7 +31,7 @@ const drawCircle = (
 };
 
 export const drawPlanetsSystem: System<Components, Resources> = (app: App<Components, Resources>) => {
-  for (const [{ position }, shape] of app.queryIter('body', 'shape', 'attractor')) {
+  for (const [_, { position }, shape] of app.queryIter(PLANETS)) {
     if (shape.kind === 'circle') {
       drawCircle(
         app.resources.context,
@@ -44,7 +44,7 @@ export const drawPlanetsSystem: System<Components, Resources> = (app: App<Compon
 };
 
 export const drawBallsSystem: System<Components, Resources> = (app: App<Components, Resources>) => {
-  for (const [{ position }, shape, _, entity] of app.queryIter('body', 'shape', 'movement')) {
+  for (const [_, { position }, shape, entity] of app.queryIter(BALLS)) {
     if (shape.kind === 'circle') {
       const pos = Vec2.v1.copy(position).addMut(app.resources.game.camera.offset);
       const color = app.hasComponent(entity, 'active') ? shape.color : 'lightgrey';
@@ -64,7 +64,7 @@ const drawArrowsSystem: System<Components, Resources> = (app: App<Components, Re
       .timesMut(0.5)
       .limitMut(action.maxLength);
 
-    for (const [_, { position }] of app.queryIter('movement', 'body')) {
+    for (const [_, { position }] of app.queryIter(MOVING_BODIES)) {
       ctx.beginPath();
       ctx.strokeStyle = 'rgb(255, 255, 255)';
       ctx.moveTo(position.x + offset.x, position.y + offset.y);
@@ -79,7 +79,7 @@ const drawTargetsSystem: System<Components, Resources> = app => {
   const { context: ctx } = app.resources;
   const offset = app.resources.game.camera.offset;
 
-  for (const [{ target }] of app.queryIter('target')) {
+  for (const [{ target }] of app.queryIter(TARGETS)) {
     ctx.beginPath();
     ctx.fillStyle = BACKGROUND_COLOR;
 

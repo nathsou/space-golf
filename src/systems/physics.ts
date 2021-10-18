@@ -1,20 +1,19 @@
 import { combineSystems, System } from "parsecs";
-import { Components } from "../components";
+import { ACTIVE_BALLS, ACTIVE_MOVING_BODIES, ATTRACTING_BODIES, Components, PLANETS } from "../components";
 import { Resources } from "../resources";
-import { Vec2 } from "../vec2";
+import { Vec2 } from "../utils/vec2";
 import { TARGET_RADIUS } from './draw';
 
 const G = 2.4;
 const FRICTION_K = 0.02;
 
 export const gravitySystem: System<Components, Resources> = app => {
-  const balls = app.queryIter('active', 'movement', 'body');
   const deltaT = app.resources.game.deltaT;
 
-  for (const [_, { velocity, acceleration }, { position: ballPos, mass: ballMass }] of balls) {
-    for (const [_, { position: planetPos, mass: planetMass }] of app.queryIter('attractor', 'body')) {
+  for (const [_, { velocity, acceleration }, { position: ballPos, mass: ballMass }] of app.queryIter(ACTIVE_MOVING_BODIES)) {
+    for (const [_, { position: planetPos, mass: planetMass }] of app.queryIter(ATTRACTING_BODIES)) {
       const forceDir = Vec2.v1.copy(planetPos).subMut(ballPos);
-      const forceLen = G * app.resources.screenSizeFactor * ((ballMass * planetMass) / forceDir.lengthSq());
+      const forceLen = G * ((ballMass * planetMass) / forceDir.lengthSq());
       const force = forceDir.normalizeMut().timesMut(forceLen);
       acceleration.addMut(force.divMut(ballMass));
     }
@@ -26,10 +25,10 @@ export const gravitySystem: System<Components, Resources> = app => {
 };
 
 export const collisionSystem: System<Components, Resources> = app => {
-  const balls = app.queryIter('active', 'movement', 'body', 'shape');
+  const balls = app.queryIter(ACTIVE_BALLS);
 
   for (const [_, { velocity, prevPosition: prevBallPos }, { position: ballPos }, ballShape, ballEntity] of balls) {
-    for (const [_, { position: planetPos }, planetShape, planetEntity] of app.queryIter('attractor', 'body', 'shape')) {
+    for (const [_, { position: planetPos }, planetShape, planetEntity] of app.queryIter(PLANETS)) {
       const radiusSum = ballShape.radius + planetShape.radius;
 
       if (ballPos.distSq(planetPos) <= radiusSum ** 2) {

@@ -1,16 +1,20 @@
 import { System } from "parsecs";
-import { Components } from "../components";
+import { Components, MOVING_BODIES } from "../components";
 import { Resources } from "../resources";
-import { Vec2 } from "../vec2";
+import { Vec2 } from "../utils/vec2";
 
 const OFFSET_MARGIN = 100;
 
+const first = <T>(it: IterableIterator<T>): T | undefined => {
+  return it.next().value;
+};
+
 export const cameraSystem: System<Components, Resources> = app => {
   const camera = app.resources.game.camera;
-  const balls = app.query('movement', 'body');
+  const ball = first(app.queryIter(MOVING_BODIES));
 
-  if (balls.length === 1) {
-    const [_, { position }] = balls[0];
+  if (ball) {
+    const [_, { position }] = ball;
     const { canvas } = app.resources;
     const offset = Vec2.v1.set(0, 0);
 

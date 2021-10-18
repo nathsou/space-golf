@@ -1,6 +1,6 @@
 import { Circle } from "./utils/circlePacking";
 import { gaussRandom, randomInt } from "./utils/rand";
-import { vec2, Vec2 } from "./vec2";
+import { vec2, Vec2 } from "./utils/vec2";
 
 export type StarTile = {
   stars: Circle[],

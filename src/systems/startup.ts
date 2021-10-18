@@ -1,10 +1,10 @@
 import { System } from "parsecs";
-import { Components } from "../components";
+import { Components, PLANETS } from "../components";
 import { Resources } from "../resources";
 import { packCircles } from "../utils/circlePacking";
 import { randomPalette } from "../utils/color";
 import { randomBetween } from "../utils/rand";
-import { Vec2, vec2 } from "../vec2";
+import { Vec2, vec2 } from "../utils/vec2";
 
 export const BALL_RADIUS = 6;
 export const MIN_DIST_BETWEEN_PLANETS = BALL_RADIUS * 4;
@@ -49,9 +49,10 @@ export const addPlanets = (count = 10): System<Components> => app => {
 };
 
 export const addBalls = (count = 1): System<Components> => app => {
-  const planets = app.query('body', 'shape', 'attractor');
+  const planets = app.query(PLANETS);
 
   const [
+    _,
     { position: planetPos },
     { radius: planetRadius }
   ] = planets.find(([_b, _s, _q, entity]) =>
@@ -89,15 +90,17 @@ export const addInputs: System<Components, Resources> = app => {
     }
   });
 
+  const MOVEMENT = ['movement'] as const;
+
   canvas.addEventListener('pointerup', () => {
     const v = Vec2.v1
       .copy(action.start)
       .subMut(action.end)
       .timesMut(500)
-      .limitMut(100000 * 0.6);
+      .limitMut(60000);
 
     if (!isNaN(v.x) && !isNaN(v.y)) {
-      for (const [{ acceleration }, entity] of app.queryIter('movement')) {
+      for (const [{ acceleration }, entity] of app.queryIter(MOVEMENT)) {
         if (!app.hasComponent(entity, 'active')) {
           app.addComponent(entity, { type: 'active' });
         }

@@ -1,6 +1,6 @@
 import { Game } from "./main";
 import { StarMap } from "./starMap";
-import { Vec2 } from "./vec2";
+import { Vec2 } from "./utils/vec2";
 
 export type Resources = {
   canvas: HTMLCanvasElement,
@@ -10,7 +10,6 @@ export type Resources = {
     end: Vec2,
     maxLength: number,
   },
-  screenSizeFactor: number,
   game: Game,
   stars: StarMap,
 };
